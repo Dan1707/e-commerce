@@ -29,6 +29,10 @@ export default defineConfig({
 				find: '@/types',
 				replacement: path.resolve(__dirname, 'src/shared/types'),
 			},
+			{
+				find: '@/api',
+				replacement: path.resolve(__dirname, 'src/shared/api'),
+			},
 			{ find: '@', replacement: path.resolve(__dirname, 'src') },
 		],
 	},

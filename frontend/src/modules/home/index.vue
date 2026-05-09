@@ -1,63 +1,31 @@
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue'
-import axios from 'axios'
-import { useRoute, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { Loader } from '@/ui/loader'
 import ProductCard from '@/shared/components/product-card/productCard.vue'
-import type { Product } from '@/types/product.types'
-import ProductFilters from './components/product-filters/productFilters.vue'
+import ProductFilters from './components/productFilters.vue'
 import MyPagination from '@/components/my-pagination/myPagination.vue'
-import type { PaginationMeta } from '@/types/pagination.types'
+import { useProducts } from '@/shared/composables/useProducts'
+import { onMounted } from 'vue'
 
-const products = ref<Product[]>()
-const isLoading = ref(false)
-const paginationMeta = ref<PaginationMeta>()
-
-const route = useRoute()
 const router = useRouter()
 
-const getProducts = async (page: number | null = null) => {
-	try {
-		isLoading.value = true
-
-		const res = await axios.get(`http://backend.test/api/products`, {
-			params: page ? { page } : {},
-		})
-
-		if (res.status === 200) return res
-	} catch (error) {
-	} finally {
-		isLoading.value = false
-	}
-}
-
-const getPaginationData = async (page: number) => {
-	try {
-		isLoading.value = true
-		const res = await getProducts(page)
-
-		if (res) {
-			paginationMeta.value = res.data.meta
-			products.value = res.data.data
-		}
-	} catch (error) {
-	} finally {
-		isLoading.value = false
-	}
-}
-
-onMounted(async () => {
-	if (!route.query.page) {
-		await router.push({ query: { page: 1 } })
-	}
-
-	await getPaginationData(Number(route.query.page))
-})
+const {
+	isLoading,
+	products,
+	paginationMeta,
+	searchQuery,
+	currentPage,
+	fetchProducts,
+} = useProducts()
 
 const updatePage = async (page: number) => {
+	currentPage.value = page
 	await router.push({ query: { page } })
-	await getPaginationData(page)
 }
+
+onMounted(() => {
+	fetchProducts()
+})
 </script>
 
 <template>
@@ -68,6 +36,7 @@ const updatePage = async (page: number) => {
 			<div class="flex justify-between mt-8 gap-6">
 				<ProductFilters
 					class="sticky top-20"
+					v-model:search="searchQuery"
 					:categories="[
 						'Electronics',
 						'Clothing',
@@ -88,9 +57,10 @@ const updatePage = async (page: number) => {
 					/>
 				</div>
 			</div>
+
 			<MyPagination
-				v-if="paginationMeta"
-				:pagination="paginationMeta as PaginationMeta"
+				v-if="paginationMeta && paginationMeta.total >= 10"
+				:pagination="paginationMeta"
 				@loadNewPage="updatePage"
 				class="mt-8"
 			/>

@@ -15,7 +15,8 @@
 			"@/ui/*": ["./src/shared/components/ui/*"],
 			"@/lib/*": ["./src/shared/lib/*"],
 			"@/composables/*": ["./src/shared/composables/*"],
-			"@/types/*": ["./src/shared/types/*"]
+			"@/types/*": ["./src/shared/types/*"],
+			"@/api/*": ["./src/shared/api/*"]
 		},
 
 		// `vue-tsc --build` produces a .tsbuildinfo file for incremental type-checking.

@@ -1,6 +1,16 @@
+<script setup lang="ts">
+import { Heart, ShoppingCart } from 'lucide-vue-next'
+import Button from '../ui/button/Button.vue'
+import type { Product } from '@/types/product.types'
+
+defineProps<{
+	product: Product
+}>()
+</script>
+
 <template>
 	<div
-		class="group relative border rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl bg-white border-slate-200 hover:border-slate-300 hover:shadow-slate-200/80 dark:bg-zinc-900 dark:border-zinc-800 dark:hover:border-zinc-600 dark:hover:shadow-black/50"
+		class="group relative border rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl bg-white border-slate-200 hover:border-slate-300 hover:shadow-slate-200/80 dark:bg-zinc-900 dark:border-zinc-800 dark:hover:border-zinc-600 h-96 dark:hover:shadow-black/50"
 	>
 		<!-- Sale badge -->
 		<div
@@ -86,13 +96,3 @@
 		</div>
 	</div>
 </template>
-
-<script setup lang="ts">
-import { Heart, ShoppingCart } from 'lucide-vue-next'
-import Button from '../ui/button/Button.vue'
-import type { Product } from '@/types/product.types'
-
-defineProps<{
-	product: Product
-}>()
-</script>

@@ -1,20 +1,76 @@
+<script setup lang="ts">
+import { reactive, computed, watch } from 'vue'
+import { Search, X } from 'lucide-vue-next'
+import { Input } from '@/ui/input'
+import { Button } from '@/ui/button'
+import SearchBar from './searchBar.vue'
+
+const props = defineProps<{
+	categories: string[]
+	categoryCounts?: Record<string, number>
+}>()
+
+const emit = defineEmits<{
+	change: [filters: typeof filters]
+}>()
+
+const PRICE_MIN = 0
+const PRICE_MAX = 1000
+
+const filters = reactive({
+	search: '',
+	priceMin: PRICE_MIN,
+	priceMax: PRICE_MAX,
+	category: 'all',
+})
+
+const minPercent = computed(
+	() => ((filters.priceMin - PRICE_MIN) / (PRICE_MAX - PRICE_MIN)) * 100,
+)
+const maxPercent = computed(
+	() => ((filters.priceMax - PRICE_MIN) / (PRICE_MAX - PRICE_MIN)) * 100,
+)
+
+watch(
+	() => filters.priceMin,
+	val => {
+		if (val > filters.priceMax) filters.priceMin = filters.priceMax
+	},
+)
+watch(
+	() => filters.priceMax,
+	val => {
+		if (val < filters.priceMin) filters.priceMax = filters.priceMin
+	},
+)
+
+const hasActiveFilters = computed(
+	() =>
+		filters.search !== '' ||
+		filters.priceMin !== PRICE_MIN ||
+		filters.priceMax !== PRICE_MAX ||
+		filters.category !== 'all',
+)
+
+function resetFilters() {
+	filters.search = ''
+	filters.priceMin = PRICE_MIN
+	filters.priceMax = PRICE_MAX
+	filters.category = 'all'
+}
+
+watch(filters, () => emit('change', { ...filters }), { deep: true })
+</script>
 <template>
 	<aside class="w-72 shrink-0 flex flex-col gap-4">
 		<!-- Search -->
-		<div
-			class="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-4"
-		>
-			<div class="relative">
-				<Search
-					class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-zinc-500 pointer-events-none"
-				/>
-				<Input
-					v-model="filters.search"
-					placeholder="Search products..."
-					class="pl-9 bg-slate-50 dark:bg-zinc-800 border-slate-200 dark:border-zinc-700"
-				/>
-			</div>
-		</div>
+		<SearchBar
+			@nameToSearch="
+				(nameToSearch: string) => {
+					filters.search = nameToSearch
+				}
+			"
+		/>
 
 		<!-- Categories -->
 		<div
@@ -141,69 +197,6 @@
 		</Button>
 	</aside>
 </template>
-
-<script setup lang="ts">
-import { reactive, computed, watch } from 'vue'
-import { Search, X } from 'lucide-vue-next'
-import { Input } from '@/ui/input'
-import { Button } from '@/ui/button'
-
-const props = defineProps<{
-	categories: string[]
-	categoryCounts?: Record<string, number>
-}>()
-
-const emit = defineEmits<{
-	change: [filters: typeof filters]
-}>()
-
-const PRICE_MIN = 0
-const PRICE_MAX = 1000
-
-const filters = reactive({
-	search: '',
-	priceMin: PRICE_MIN,
-	priceMax: PRICE_MAX,
-	category: 'all',
-})
-
-const minPercent = computed(
-	() => ((filters.priceMin - PRICE_MIN) / (PRICE_MAX - PRICE_MIN)) * 100,
-)
-const maxPercent = computed(
-	() => ((filters.priceMax - PRICE_MIN) / (PRICE_MAX - PRICE_MIN)) * 100,
-)
-
-watch(
-	() => filters.priceMin,
-	val => {
-		if (val > filters.priceMax) filters.priceMin = filters.priceMax
-	},
-)
-watch(
-	() => filters.priceMax,
-	val => {
-		if (val < filters.priceMin) filters.priceMax = filters.priceMin
-	},
-)
-
-const hasActiveFilters = computed(
-	() =>
-		filters.search !== '' ||
-		filters.priceMin !== PRICE_MIN ||
-		filters.priceMax !== PRICE_MAX ||
-		filters.category !== 'all',
-)
-
-function resetFilters() {
-	filters.search = ''
-	filters.priceMin = PRICE_MIN
-	filters.priceMax = PRICE_MAX
-	filters.category = 'all'
-}
-
-watch(filters, () => emit('change', { ...filters }), { deep: true })
-</script>
 
 <style scoped>
 .price-thumb {
