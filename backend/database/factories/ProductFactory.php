@@ -24,7 +24,7 @@ class ProductFactory extends Factory
             'name'        => ucwords($name),
             'description' => fake()->paragraphs(2, true),
             'price'       => $price,
-            'sale_price'  => fake()->boolean(30)  // 30% chance of sale
+            'sale_price'  => fake()->boolean(30)  
                                 ? round($price * fake()->randomFloat(2, 0.5, 0.9), 2)
                                 : null,
             'category'    => fake()->randomElement([
@@ -32,8 +32,8 @@ class ProductFactory extends Factory
                                 'Home & Garden', 'Sports', 'Toys'
                              ]),
             'brand'       => fake()->company(),
-            'image'       => fake()->imageUrl(640, 480, 'products'),
-            'is_active'   => fake()->boolean(85),  // 85% active
+           'image' => 'https://picsum.photos/seed/' . $this->faker->uuid() . '/640/480',
+            'is_active'   => fake()->boolean(85),  
         ];
     }
 }

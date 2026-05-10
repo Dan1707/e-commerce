@@ -12,9 +12,11 @@ class ProductController extends Controller
    public function index(Request $request)
 {
     $search = $request->input('search');
+    $category = $request->input('category');
 
     $products = Product::query()
         ->when($search, fn($q) => $q->where('name', 'like', "%{$search}%"))
+        ->when($category, fn($q)=> $q->where('category', 'like', "%{$category}%"))
         ->paginate(10);
 
     return ProductResource::collection($products);
@@ -22,6 +24,8 @@ class ProductController extends Controller
     public function show(Product $product) {
         return new ProductResource($product);
     }
+
+  
 
 
 }
